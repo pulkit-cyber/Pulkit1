@@ -251,7 +251,7 @@
             .skills-grid { grid-template-columns: repeat(2, 1fr); }
         }
         @media (max-width: 768px) {
-            .nav-links { position: fixed; top: var(--nav-height); left: 0; width: 100%; height: 100vh; background: var(--surface); flex-direction: column; padding: 40px; transform: translateX(100%); transition: 0.4s; }
+            .nav-links { position: fixed; top: var(--nav-height); left: 0; width: 100%; height: 100vh; background: var(--surface); flex-direction: column; padding: 40px; transform: translateX(100%); transition: transform 0.25s ease-in-out; }
             .nav-links.active { transform: translateX(0); }
             .hamburger { display: block; font-size: 1.5rem; color: var(--on-surface); border: none; background: none; }
             .skills-grid { grid-template-columns: 1fr; }
@@ -330,7 +330,7 @@
             </div>
             <div style="max-width: 800px; margin: 0 auto; text-align: center;" class="reveal">
                 <p style="font-size: 1.1rem; line-height: 1.8; opacity: 0.9;">
-                    I am Pulkit Aryan Singh, currently pursuing a <strong>B.Tech in Computer Science</strong>. My passion lies in understanding how things work under the hood of the web. I have honed my skills in <strong>HTML, CSS, JavaScript, and C Programming</strong>. I am always eager to learn new technologies and solve real-world problems through code.
+                    I am Pulkit Aryan Singh, currently pursuing a <strong>B.Tech in Computer Science</strong>. My passion lies in understanding how things work under the hood of the web. I have honed my skills building responsive frontends and interactive UIs using modern web technologies.
                 </p>
             </div>
         </div>
@@ -503,7 +503,12 @@
             const posY = e.clientY;
             cursorDot.style.left = `${posX}px`;
             cursorDot.style.top = `${posY}px`;
-            cursorOutline.animate({ left: `${posX}px`, top: `${posY}px` }, { duration: 500, fill: "forwards" });
+            if (cursorOutline && cursorOutline.animate) {
+                cursorOutline.animate([{ left: `${posX}px`, top: `${posY}px` }], { duration: 500, fill: "forwards" });
+            } else if (cursorOutline) {
+                cursorOutline.style.left = `${posX}px`;
+                cursorOutline.style.top = `${posY}px`;
+            }
         });
 
         const hoverables = document.querySelectorAll('.nav-item, .magnetic-btn, .tilt-card');
@@ -575,7 +580,8 @@
 
             navItems.forEach(item => {
                 item.classList.remove('active');
-                if (item.getAttribute('onclick').includes(current)) {
+                const onclickAttr = item.getAttribute('onclick') || '';
+                if (onclickAttr.includes(current)) {
                     item.classList.add('active');
                 }
             });
@@ -656,9 +662,9 @@
         const modalTitle = document.getElementById('modal-title');
         const modalDesc = document.getElementById('modal-desc');
         const projectDetails = {
-            'modal-1': { title: 'E-Commerce Dashboard', desc: 'A full-stack capable frontend for an e-commerce platform. It features product sorting, cart management logic, and a responsive grid layout using CSS Grid and Flexbox.' },
-            'modal-2': { title: 'Weather App', desc: 'This app connects to the OpenWeatherMap API to fetch real-time data. It features error handling for invalid cities and updates the UI dynamically based on the weather conditions.' },
-            'modal-3': { title: 'Task Manager', desc: 'A productivity app that allows users to Create, Read, Update, and Delete tasks. It utilizes Browser LocalStorage to save data, so tasks persist even after a page refresh.' }
+            'modal-1': { title: 'E-Commerce Dashboard', desc: 'A full-stack capable frontend for an e-commerce platform. It features product sorting, cart management logic, and a responsive grid layout.'},
+            'modal-2': { title: 'Weather App', desc: 'This app connects to the OpenWeatherMap API to fetch real-time data. It features error handling for invalid cities and updates the UI dynamically.'},
+            'modal-3': { title: 'Task Manager', desc: 'A productivity app that allows users to Create, Read, Update, and Delete tasks. It utilizes Browser LocalStorage to save data, so tasks persist across reloads.'}
         };
         function openModal(id) {
             const data = projectDetails[id];
@@ -700,13 +706,15 @@
                 }
             }
             draw() {
-                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary');
+                const color = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#1a73e8';
+                ctx.fillStyle = color;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
         function init() {
+            particles = [];
             for(let i=0; i<60; i++) particles.push(new Particle());
         }
         function animate() {
@@ -722,6 +730,7 @@
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+            init();
         });
 
         const hamburger = document.getElementById('hamburger');
@@ -731,4 +740,4 @@
         });
     </script>
 </body>
-</html>
+                        </html>
